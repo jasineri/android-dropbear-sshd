@@ -49,7 +49,7 @@ control over the environment.
 
 # Android Dropbear Builds
 
-![Build status](https://github.com/ribbons/android-dropbear/workflows/Build/badge.svg)
+![Build status](https://github.com/jasineri/android-dropbear-sshd/workflows/Build/badge.svg)
 
 Build scripts and configuration for cross-compiling
 [Dropbear](https://matt.ucc.asn.au/dropbear/dropbear.html) for Android.
