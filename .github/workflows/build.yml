@@ -31,10 +31,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Build script
+      - name: Setup NDK
         uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21e
+
+      - name: Build script
         run: |
-          ANDROID_NDK_HOME="$ANDROID_HOME/$ndk" ./build
+          ./build
         env:
           TARGET: ${{ matrix.target }}
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
