@@ -6,12 +6,12 @@
 
 name: Build
 on:
-  push:
-    branches-ignore:
-      - dependabot/**
-  pull_request:
-  schedule:
-    - cron: '30 12 * * 5'
+#  push:
+#    branches-ignore:
+#      - dependabot/**
+  workflow_dispatch:
+#  schedule:
+#    - cron: '30 12 * * 5'
 
 permissions:
   contents: read
