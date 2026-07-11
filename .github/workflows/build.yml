@@ -52,7 +52,8 @@ jobs:
           cp dropbear/dropbearkey output
           cp dropbear/dropbearconvert output
           cp dropbear/scp output
-          cp dropbear/LICENSE output/LICENSE.txt
+          cp dropbear/LICENSE output/LICENSE
+          cp LICENSE.txt output/LICENSE.txt
 
       - name: Upload binaries as artifact
         uses: actions/upload-artifact@v7
