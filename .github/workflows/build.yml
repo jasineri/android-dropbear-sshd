@@ -110,6 +110,7 @@ jobs:
             if (releases.length === 0) {
               return ''
             }
+            console.log(`Previous latest release tag name=${releases[0].tagName}`)
             return releases[0].tagName
 
       - name: Package assets
@@ -120,7 +121,7 @@ jobs:
       - name: Create release
         if: >
           env.BUILD_RELEASE != steps.latest_release.outputs.result &&
-          github.event_name == 'push' && github.ref == 'refs/heads/master'
+          github.ref == 'refs/heads/master'
         uses: actions/github-script@v9
         with:
           script: |
