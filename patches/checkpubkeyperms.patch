@@ -1,0 +1,16 @@
+Subject: [PATCH] prepare to work for Android devices running Magisk, designed for very strict and controlled environments where all required configurations, keys, and runtime data are located inside one dedicated directory.
+---
+Index: src/svr-authpubkey.c
+===================================================================
+diff --git a/src/svr-authpubkey.c b/src/svr-authpubkey.c
+--- a/src/svr-authpubkey.c	(revision d27a296cfaf0bba4fc45c0a337184f75b7c92bac)
++++ b/src/svr-authpubkey.c	(date 1783763950496)
+@@ -592,7 +592,7 @@
+ 			TRACE(("checkpubkeyperms: bad perm on %s", path))
+ 			ret = DROPBEAR_FAILURE;
+ 		}
+-		if (strcmp(path, ses.authstate.pw_dir) == 0 || strcmp(path, "/") == 0) {
++		if (1) {
+ 			break;
+ 		}
+ 	}

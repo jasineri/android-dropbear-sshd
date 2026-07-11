@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 # Copyright © 2020-2026 Matt Robinson
+# Copyright © 2026 Nerijus Jasinskas
 #
 # SPDX-License-Identifier: MIT
 
@@ -9,12 +10,12 @@ if [ -z "$ANDROID_NDK_HOME" ]; then
     exit 1
 fi
 
-TARGET=${TARGET:-armv7a-linux-androideabi}
+TARGET=${TARGET:-aarch64-linux-android}
 PLATFORM=21
 
 toolchain=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
 version=$(cat dropbear-version)
-patches=$(find . -maxdepth 1 -name "*.patch" | wc -l)
+patches=$(find patches -maxdepth 1 -name "*.patch" | wc -l)
 [ "$patches" -lt 1 ] && unset -v patches
 
 [ -d buildinfo ] || mkdir buildinfo
@@ -27,7 +28,7 @@ git clone --branch "$version" --depth 1 https://github.com/mkj/dropbear.git
 cd dropbear
 
 if [ "$patches" ]; then
-    for patch in ../*.patch; do
+    for patch in ../patches/*.patch; do
         patch -p1 < "$patch"
     done
 fi
