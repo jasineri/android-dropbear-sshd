@@ -159,8 +159,29 @@ script or another controlled boot environment.
 Example:
 
 ```sh
-dropbear -R -E -p 22
+/path/to/dropbear/dropbear \
+    -F \
+    -e \
+    -D /path/to/dropbear/.ssh \
+    -r /path/to/dropbear/dropbear_host_key \
+    -p <ssh-port>
 ```
+## Options used in this example
+
+- `-F`  
+  Run in the foreground. Useful for Magisk service scripts and debugging.
+
+- `-e`  
+  Send logs to standard error.
+
+- `-D <directory>`  
+  Use the specified directory for the `authorized_keys`.
+
+- `-r <host-key>`  
+  Load the SSH host key from the specified file.
+
+- `-p <ssh-port>`  
+  Listen on the specified TCP port.
 
 The exact command line options depend on the intended security configuration
 and device requirements.
