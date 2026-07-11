@@ -61,7 +61,7 @@ jobs:
           path: output
 
       - name: Upload build info as artifact
-        if: matrix.target == 'armv7a-linux-androideabi'
+        if: matrix.target == 'aarch64-linux-android'
         uses: actions/upload-artifact@v7
         with:
           name: buildinfo
@@ -85,8 +85,6 @@ jobs:
       - name: Extract version to environment vars
         run: |
           echo "BUILD_RELEASE=$(cat buildinfo/release)" >> "$GITHUB_ENV"
-          echo "JAR_VERSION=$(cat buildinfo/release | \
-                sed 's/^DROPBEAR_//;s/p/-/')" >> "$GITHUB_ENV"
 
       - name: Latest release tag name
         id: latest_release
@@ -112,56 +110,8 @@ jobs:
 
       - name: Package assets
         run: |
-          zip --junk-paths dropbear-armv7a-linux-androideabi.zip \
-              armv7a-linux-androideabi/*
           zip --junk-paths dropbear-aarch64-linux-android.zip \
               aarch64-linux-android/*
-          zip --junk-paths dropbear-i686-linux-android.zip \
-              i686-linux-android/*
-          zip --junk-paths dropbear-x86_64-linux-android.zip \
-              x86_64-linux-android/*
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: adopt
-          java-version: 11
-          cache: maven
-          server-id: central
-          server-username: MAVEN_CENTRAL_USERNAME
-          server-password: MAVEN_CENTRAL_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
-
-      - name: Package JAR
-        run: |
-          copyarchbinaries() {
-            mkdir -p src/main/resources/lib/$2
-            cp -p $1/dropbear src/main/resources/lib/$2/libdropbear.so
-            cp -p $1/dbclient src/main/resources/lib/$2/libdbclient.so
-            cp -p $1/dropbearkey src/main/resources/lib/$2/libdropbearkey.so
-            cp -p $1/dropbearconvert \
-                  src/main/resources/lib/$2/libdropbearconvert.so
-            cp -p $1/scp src/main/resources/lib/$2/libscp.so
-          }
-
-          copyarchbinaries armv7a-linux-androideabi armeabi-v7a
-          copyarchbinaries aarch64-linux-android arm64-v8a
-          copyarchbinaries i686-linux-android x86
-          copyarchbinaries x86_64-linux-android x86_64
-
-          mkdir src/main/resources/META-INF
-          cp -p aarch64-linux-android/LICENSE.txt \
-                src/main/resources/META-INF/LICENSE
-
-          mvn --batch-mode versions:set -DnewVersion="${{ env.JAR_VERSION }}"
-          mvn --batch-mode package
-          cp target/android-dropbear-*.jar android-dropbear.jar
-
-      - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: jar
-          path: android-dropbear.jar
 
       - name: Create release
         if: >
@@ -185,19 +135,14 @@ jobs:
             })
 
             const assets = [
-              'dropbear-armv7a-linux-androideabi.zip',
               'dropbear-aarch64-linux-android.zip',
-              'dropbear-i686-linux-android.zip',
-              'dropbear-x86_64-linux-android.zip',
-              'android-dropbear.jar',
             ]
 
             for(const asset of assets) {
               console.log("Uploading " + asset)
               await github.rest.repos.uploadReleaseAsset({
                 headers: {
-                  "content-type": asset.endsWith(".jar") ?
-                    "application/java-archive" : "application/zip",
+                  "content-type": "application/zip",
                 },
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -206,14 +151,3 @@ jobs:
                 name: asset,
               })
             }
-
-      - name: Upload JAR to package registry
-        if: >
-          env.BUILD_RELEASE != steps.latest_release.outputs.result &&
-          github.event_name == 'push' && github.ref == 'refs/heads/master' &&
-          !contains(env.BUILD_RELEASE, 'pre')
-        run: mvn --batch-mode deploy
-        env:
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_SIGNING_PASSPHRASE }}
-          MAVEN_CENTRAL_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
-          MAVEN_CENTRAL_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
