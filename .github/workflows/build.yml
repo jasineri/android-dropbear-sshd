@@ -106,7 +106,11 @@ jobs:
               repo: context.repo.repo,
             }
             const result = await github.graphql(query, vars)
-            return result.repository.releases.nodes[0].tagName
+            const releases = result.repository.releases.nodes
+            if (releases.length === 0) {
+              return ''
+            }
+            return releases[0].tagName
 
       - name: Package assets
         run: |
